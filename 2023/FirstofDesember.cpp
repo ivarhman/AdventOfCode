@@ -6,8 +6,7 @@
 #include <regex>
 
 int main() {
-    std::ifstream file("Inputs/FirstofDesember.txt");
-//    std::ofstream fileo("Outputs/FirstofDesember.txt");
+    std::ifstream file("Inputs/FirstofDecember.txt");
     
     std::string line;
     std::string output;

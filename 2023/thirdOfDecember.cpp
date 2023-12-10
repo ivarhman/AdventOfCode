@@ -3,7 +3,7 @@
 #include <fstream>
 
 bool isSymbol (char c) {
-    return !std::isalpha(c) && !std::isdigit(c) && c != '.';
+    return !std::isalpha(c) && !std::isdigit(c) && c != '.' && c != ' ' && c != '\n';
 }
 
 int findValues(char array[140][140] ,int Row,int column) {
@@ -24,16 +24,17 @@ int findValues(char array[140][140] ,int Row,int column) {
             } else {
                 if(numbers) {
                     // stringvalue = array[Row + i][column+l-1] + array[Row+i][column+l];
-                    value = (int(array[Row+i][column+l-2])-'0')*10 + (int(array[Row+i][column+l-1])-'0');
-                    // std::cout << array[Row+i][column+l-2] << array[Row+i][column+l];
+                    value = (int(array[Row+i][column+l-1])-'0');
+                    if (std::isdigit(array[Row+i][column+l-2])) {
+                        value = (int(array[Row+i][column+l-2])-'0')*10 + value;
+                    };
                     if (std::isdigit(array[Row+i][column+l-3])) {
-                        // stringvalue = array[Row+i][column+l-2] + stringvalue;
-                        // std:: cout << array[Row+i][column+l-3];
+
                         value = (int(array[Row+i][column+l-3])-'0')*100 + value;
                     };
                     // std::cout << array[Row+i][column+l-2] << array[Row+i][column+l-1];
-                    output *= value;\
-                    // std::cout << "\n Value: " << value << "\n";
+                    output *= value;
+                    std::cout << "\tValue1: " << value;
                     };
                 // output *= std::stoi(stringvalue);
                 stringvalue = "";
@@ -43,28 +44,33 @@ int findValues(char array[140][140] ,int Row,int column) {
         };
         if (numbers) {
                 // stringvalue = array[Row+i][column+2 - sizeofnumber] + array[Row + i][column +3-sizeofnumber] + array[Row+i][column +4   -sizeofnumber];
-                value = (int(array[Row+i][column+2 - sizeofnumber]) - '0')*10 + int(array[Row + i][column +3-sizeofnumber])-'0';
-                // std::cout << array[Row+i][column+2 - sizeofnumber] << array[Row + i][column +3-sizeofnumber];
+                value = (int(array[Row+i][column+2 - sizeofnumber]) - '0');
+                if (std::isdigit(array[Row+i][column +3 -sizeofnumber])) {
+                    value = value * 10 + int(array[Row+i][column +3   -sizeofnumber])-'0';
+                }
                 if (std::isdigit(array[Row+i][column +4 -sizeofnumber])){
-                    // std::cout << array[Row+i][column +4 -sizeofnumber];
                     value = value * 10 + int(array[Row+i][column +4   -sizeofnumber])-'0';
                 }
                 output *= value;
-                // std::cout << "\n Value: " << value << "\n";
+                std::cout << "\tValue2: " << value;
         };
     };
-    std::cout << "Output: " << output << "\n";
+    // std::cout << "\n";
+    std::cout << "\t total: " << output << "      \t Row: " << Row << "  \t Column: " << column << "\n";
     return output;
 }
+
 
 int main() {
 
     std::ifstream file("Inputs/thirdOfDecember.txt");
+    std::ofstream outputfile("OutputDay3.txt");
 
 
     char inputdata [140][140];
     int row = 0;
     int sum = 0;
+    int totalgears = 0;
 
     if (file.is_open()) {
         std::string line;
@@ -107,15 +113,22 @@ int main() {
                     };
                 };
                 if (gears == 2) {
+                    totalgears += 1;
                     // std::cout << "Sum: " << sum << "\n";
                     sum += findValues(inputdata, i, j);
-                    std::cout << "Sum: " << sum << "\n";
-                }
-            };
+                    //std::cout << "Sum: " << sum << "\n";
+                    outputfile << "1";
+                } else {
+                    outputfile << "0";
+                };
+            } else {
+                outputfile << "0"; };
         };
+        outputfile << "\n";
     };
 
     std::cout << sum << "\n";
+    std::cout << totalgears << "\n";
 
     /*
     std::ifstream file2("Inputs/thirdOfDecember.txt");

@@ -59,6 +59,7 @@
         "algorithm": "cpp",
         "optional": "cpp",
         "regex": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "numeric": "cpp"
     }
 }

@@ -63,7 +63,7 @@ int findValues(char array[140][140] ,int Row,int column) {
 
 int main() {
 
-    std::ifstream file("Inputs/thirdOfDecember.txt");
+    std::ifstream file("input.txt");
     std::ofstream outputfile("OutputDay3.txt");
 
 

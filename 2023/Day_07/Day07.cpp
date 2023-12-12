@@ -25,6 +25,7 @@ class hand {
         std::string prevcards = "";
         std::vector<int> scores;
         std::string scorestring = "";
+        std::string highcard = "";
         int jokers = 0;
 
         for (char card : this->cards) {
@@ -33,15 +34,15 @@ class hand {
             } else {
                 switch (card) {
                     case 'T': scorestring += "10";break;
-                    case 'J': scorestring += "01";break; // Change to 11 for part 2
+                    case 'J': scorestring += "01"; jokers++;continue; // Change to 11 for part 2
                     case 'Q': scorestring += "12";break;
                     case 'K': scorestring += "13";break;
                     case 'A': scorestring += "14";break;
                 }
             }
-            if ( card == 'J') {
-                jokers++;
-                continue;
+
+            if (highcard == "" || (stoi(scorestring.substr(scorestring.size() - 2, 2)) > stoi(highcard))) {
+                highcard = scorestring.substr(scorestring.size() - 2, 2);
             }
 
             if (prevcards.find(card) == std::string::npos || prevcards == "") {
@@ -60,21 +61,30 @@ class hand {
 
         std::sort(scores.begin(), scores.end());
         scores[scores.size() - 1] += jokers;
+        if (jokers == 5) { 
+            score[0] = 5;
+        }
+        if (scores[0] > 5) {
+            scores[0] = 5;
+        }
 
         switch (scores[0]) {
-            case 5: scorestring.insert(0, "7");break;
-            case 4: scorestring.insert(0, "6");break;
-            case 3: scorestring.insert(0, "4");break;
+            case 5: scorestring.insert(0, "700");break;
+            case 4: scorestring.insert(0, "600");break;
+            case 3: scorestring.insert(0, "400");break;
             case 2:
                 if (scores.size() == 2 && scores[1] == 3) {
-                    scorestring.insert(0, "5");
+                    scorestring.insert(0, "500");
                 } else if (scores.size() == 2) {
-                    scorestring.insert(0,"3");
+                    scorestring.insert(0,"300");
                 } else {
-                scorestring.insert(0, "2");
+                scorestring.insert(0, "200");
                 }; break;
-            case 1: scorestring.insert(0,"1");break;
-            default: scorestring.insert(0,"0");break;
+            case 1:
+                scorestring.insert(0,highcard);
+                scorestring.insert(0,"1");break;
+            default: scorestring.insert(0,"000");
+            std::cerr << "Error: " << scores[0] << "\n";break;
         }
         return scorestring;
     };
@@ -162,8 +172,8 @@ int part1(const std::string inputfile) {
 };
 
 int main() {
-    camelCards game("example.txt");
-    // game.print();
+    camelCards game("input.txt");
+    game.print();
     std::cout << "Part 1: \n" << game.getpart1() << "\n";
     // std::cout << "Part 2: " << part2("input.txt") << "\n";
     return 0;

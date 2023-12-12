@@ -60,6 +60,18 @@
         "optional": "cpp",
         "regex": "cpp",
         "sstream": "cpp",
-        "numeric": "cpp"
+        "numeric": "cpp",
+        "array": "cpp",
+        "chrono": "cpp",
+        "deque": "cpp",
+        "execution": "cpp",
+        "forward_list": "cpp",
+        "iomanip": "cpp",
+        "list": "cpp",
+        "queue": "cpp",
+        "ranges": "cpp",
+        "set": "cpp",
+        "span": "cpp",
+        "xtree": "cpp"
     }
 }

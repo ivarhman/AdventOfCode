@@ -17,10 +17,15 @@ class hand {
         this->score = getscore();
     };
 
-    private: std::string getscore() {
+    public: void setRank(int rankinorder) {
+        this->rank = rankinorder;
+    };
+
+    public: std::string getscore() {
         std::string prevcards = "";
         std::vector<int> scores;
         std::string scorestring = "";
+        int jokers = 0;
 
         for (char card : this->cards) {
             if (isdigit(card)) {
@@ -28,11 +33,15 @@ class hand {
             } else {
                 switch (card) {
                     case 'T': scorestring += "10";break;
-                    case 'J': scorestring += "11";break;
+                    case 'J': scorestring += "01";break; // Change to 11 for part 2
                     case 'Q': scorestring += "12";break;
                     case 'K': scorestring += "13";break;
                     case 'A': scorestring += "14";break;
                 }
+            }
+            if ( card == 'J') {
+                jokers++;
+                continue;
             }
 
             if (prevcards.find(card) == std::string::npos || prevcards == "") {
@@ -43,77 +52,119 @@ class hand {
             if (matches == 1) {
                 continue;
             }
-            scores.push_back(matches);
-            // std::cout << matches << "\n";
-            // std::cout << "find : " << this->cards.find(card) << "\tCard: " << card << "\thand : " << this->cards << "\n";
-        
+            scores.push_back(matches);        
         }
         if (scores.size() == 0) {
-            scores.push_back(0);
+            scores.push_back(1);
         };
 
         std::sort(scores.begin(), scores.end());
-        std::cout << "scores: " << scores[0] << "\n";
+        scores[scores.size() - 1] += jokers;
+
         switch (scores[0]) {
             case 5: scorestring.insert(0, "7");break;
             case 4: scorestring.insert(0, "6");break;
-            case 3:
-                if (scores.size() == 2) {
-                    scorestring.insert(0, "5");break;
+            case 3: scorestring.insert(0, "4");break;
+            case 2:
+                if (scores.size() == 2 && scores[1] == 3) {
+                    scorestring.insert(0, "5");
+                } else if (scores.size() == 2) {
+                    scorestring.insert(0,"3");
                 } else {
-                    scorestring.insert(0, "4");break;
-                }
-            case 2: scorestring.insert(0,"3");break;
-            case 1: scorestring.insert(0,"2");break;
-            default: scorestring.insert(0,"1");break;
+                scorestring.insert(0, "2");
+                }; break;
+            case 1: scorestring.insert(0,"1");break;
+            default: scorestring.insert(0,"0");break;
         }
         return scorestring;
-    }
+    };
 
     public: void print() {
         std::cout << "Cards: " <<  this->cards << "\t";
         std::cout << "Score: " << this->score << "\t";
+        std::cout << "Rank: " << this->rank << "  \t";
         std::cout << "Bet: " << this->bet << "\n";
-    }
+    };
+
+    public: std::string getScore() {
+        return this->score;
+    };
+
+    public: int getBet() {
+        return this->bet;
+    };
+    public: int getRank() {
+        return this->rank;
+    };
 
 };
 
+class camelCards {
+    private: std::vector<hand> hands;
 
+    public: camelCards (const std::string inputfile) {
+        std::fstream file(inputfile);
+        std::string line;
 
-int part1(std::string inputfile) {
-    int output = 0;
+        if (!file.is_open()) {
+            std::cout << "File not found\n";
+        }
 
-    std::fstream file(inputfile);
-    std::string line;
-    std::vector<std::string> hands1;
-    std::vector<int> bet;
-    std::vector<hand> hands;
+        while (std::getline(file, line)) {
+            this->hands.push_back(hand(line.substr(0,5), std::stoi(line.substr(6, line.size() - 1))));
+        }
 
-    if (!file.is_open()) {
-        std::cout << "File not found\n";
-        return 0;
+        file.close();
+        rankScores();
+    };
+
+    public: void rankScores() {
+        std::vector<std::string> scores;
+        
+        for (int i = 0; i < this->hands.size(); i++) {
+            scores.push_back(this->hands[i].getScore());
+        };
+        std::vector<std::string> rawscore = scores;
+
+        std::sort(scores.begin(),scores.end()); // remove for part 1
+
+        for (int i = 0; i < scores.size(); i++) {
+            for (int j = 0; j < rawscore.size(); j++) {
+                if (scores[i] == rawscore[j]) {
+                    this->hands[j].setRank(i+1);
+                    break;
+                }
+            }
+        }
+
+    };
+
+    public: int getpart1() {
+        int output = 0;
+
+        for (int i = 0; i<this->hands.size(); i++) {
+            output += (this->hands[i].getBet() * this->hands[i].getRank());
+        }
+        return output;
     }
 
-    while (std::getline(file, line)) {
-        hands.push_back(hand(line.substr(0,5), std::stoi(line.substr(6, line.size() - 1))));
-        hands1.push_back(line.substr(0,5));
-        bet.push_back(std::stoi(line.substr(6, line.size() - 1)));
-    }
+    public: void print(){
+        for (int i = 0;i < this->hands.size();i++) {
+            this->hands[i].print();
+        };
+    };
+};
 
-    file.close();
-
-    // for (std::string hand : hands) {
-    //     std::cout << hand << "\n";
-    // }
-    for (int i = 0; i < hands.size(); i++) {
-        hands[i].print();
-    }
-
-    return output;
+int part1(const std::string inputfile) {
+    camelCards game(inputfile);
+    game.print();
+    return game.getpart1();
 };
 
 int main() {
-    std::cout << "Part 1: \n" << part1("example.txt") << "\n";
+    camelCards game("example.txt");
+    // game.print();
+    std::cout << "Part 1: \n" << game.getpart1() << "\n";
     // std::cout << "Part 2: " << part2("input.txt") << "\n";
     return 0;
 };

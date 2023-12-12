@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <sstream>
+#include <set>
 
 class hand {
     private: std::string cards;
@@ -92,6 +93,7 @@ class hand {
     public: void print() {
         std::cout << "Cards: " <<  this->cards << "\t";
         std::cout << "Score: " << this->score << "\t";
+        std::cout << std::stoll(this->score) << "\t";
         std::cout << "Rank: " << this->rank << "  \t";
         std::cout << "Bet: " << this->bet << "\n";
     };
@@ -135,16 +137,21 @@ class camelCards {
             scores.push_back(this->hands[i].getScore());
         };
         std::vector<std::string> rawscore = scores;
-
+        std::vector<int>prevranks;
         std::sort(scores.begin(),scores.end()); // remove for part 1
 
         for (int i = 0; i < scores.size(); i++) {
             for (int j = 0; j < rawscore.size(); j++) {
                 if (scores[i] == rawscore[j]) {
                     this->hands[j].setRank(i+1);
+                    prevranks.push_back(i+1);
                     break;
                 }
             }
+        }
+        std::set<int> unique_numbers(prevranks.begin(), prevranks.end());
+        if (unique_numbers.size() != prevranks.size()) {
+            std::cout << "Error: Duplicate ranks\n";
         }
 
     };

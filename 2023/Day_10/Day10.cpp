@@ -7,6 +7,10 @@
 #include <set>
 #include <unordered_map>
 
+struct point {
+    double row, column;
+    point(double row, double column) : row(row), column(column) {};
+};
 
 class snakeMap {
     private: std::vector<std::string> map;
@@ -128,6 +132,43 @@ class snakeMap {
             };
     };
     };
+
+    public: int solveMapPart2 () {
+        int pointsInside = 0;
+        
+        std::vector<std::vector<int>> ploygon = this->trail;
+
+        for (int row = 0; row < this->map.size(); row++) {
+            for (int column = 0; column < this->map[row].length(); column++) {
+                if (this->map[row][column] == 'S') {
+                    continue;
+                }
+                if (std::find(this->trail.begin(), this->trail.end(), std::vector<int> {row, column}) != this->trail.end()) {
+                    continue;
+                }
+                std::vector<int> point = {row, column};
+                std::cout <<"row : " << row << "\tColumn:" << point[1] << "\n";
+                if (this->isInPolygon(point, ploygon)) {
+                    pointsInside++;
+                }
+            }
+        }
+        std::cout << pointsInside << "\n";
+        return pointsInside;
+    }
+
+    private: bool isInPolygon(std::vector<int> point, std::vector<std::vector<int>> polygon) {
+        int i, j, nvert = polygon.size();
+        bool c = false;
+
+        for (i = 0, j = nvert - 1; i < nvert; j = i++) {
+            if ( ((polygon[i][1] > point[1]) != (polygon[j][1] > point[1])) &&
+            (point[0] < (polygon[j][0] - polygon[i][0]) * (point[1] - polygon[i][1]) / (polygon[j][1] - polygon[i][1]) + polygon[i][0]) ) {
+                c = !c;
+            }
+        }
+        return c;
+    }
 };
 
 
@@ -138,6 +179,7 @@ int main() {
     snakeMap playSnakes(inputfile);
 
     std::cout << playSnakes.solveMappart1() << "\n";
+    playSnakes.solveMapPart2();
 
 
     return 0;
